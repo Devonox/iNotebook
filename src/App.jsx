@@ -24,12 +24,12 @@ function App() {
     <>
       <NoteState>
         <Router>
-          <Navbar/>
+          <Navbar handleAlert={handleAlert}/>
           <Alert alert={alert}/>
           <div className="container">
             <Switch>
               <Route exact path="/">
-                <Home handleAlert={handleAlert} />
+                <Home handleAlert={handleAlert}/>
               </Route>
               <Route exact path="/about">
                 <About />

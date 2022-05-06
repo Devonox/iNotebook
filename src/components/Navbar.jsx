@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const Navbar = (props) => {
   let location = useLocation();
@@ -7,6 +8,28 @@ const Navbar = (props) => {
     console.log(location.pathname);
     // eslint-disable-next-line
   }, [location]);
+  let history = useHistory();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    history.push("/login");
+  };
+  const [name, setname] = useState("");
+  const [email, setemail] = useState("");
+  const showUserName = async () => {
+    if (localStorage.getItem("token")) {
+      const userName = await fetch("http://localhost:5000/api/auth/getuser", {
+        method: "POST",
+        headers: {
+          "auth-token": localStorage.getItem("token"),
+          "Content-Type": "application/json",
+        },
+      });
+      const userNameJson = await userName.json();
+      setname(userNameJson.name);
+      setemail(userNameJson.email);
+    }
+  };
+
   return (
     <nav className={`navbar navbar-expand-lg navbar-dark bg-dark`}>
       <div className="container-fluid">
@@ -55,10 +78,62 @@ const Navbar = (props) => {
               </Link>
             </li>
           </ul>
-          <form className="d-flex">
-          <Link className="btn btn-primary mx-2" to="/login" role="button">Login</Link>
-          <Link className="btn btn-primary mx-2" to="signup" role="button">Signup</Link>
-          </form>
+          {localStorage.getItem("token") ? (
+            <div className="fs-5" onClick={showUserName} >
+              <ul className="navbar-nav">
+                <li className="dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle"
+                    to="#"
+                    id="navbarDarkDropdownMenuLink"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Welcome User <i className="fa-solid fa-circle-user"></i>
+                  </Link>
+                  <ul
+                    className="dropdown-menu dropdown-menu-dark"
+                    aria-labelledby="navbarDarkDropdownMenuLink"
+                  >
+                    <li>
+                      <Link className="dropdown-item" to="#">
+                        {name}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="dropdown-item"
+                        style={{ fontSize: "11px" }}
+                        id="item2"
+                        to="#"
+                      >
+                        {email}
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {!localStorage.getItem("token") ? (
+            <form className="d-flex">
+              <Link className="btn btn-primary mx-2" to="/login" role="button">
+                Login
+              </Link>
+              <Link className="btn btn-primary mx-2" to="/signup" role="button">
+                Signup
+              </Link>
+            </form>
+          ) : (
+            <div>
+              <button className="btn btn-primary mx-2" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

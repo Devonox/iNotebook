@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom'
 
 
 const Login = (props) => {
-    const [credentials, setCredentials] = useState({email: "", password: ""}) 
+    const [credentials, setCredentials] = useState({email: "", password: "",name:""}) 
     let history = useHistory();
 
     const handleSubmit = async (e) => {
